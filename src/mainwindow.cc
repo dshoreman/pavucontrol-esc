@@ -25,6 +25,7 @@
 #include <set>
 
 #include "mainwindow.h"
+#include "pavuapplication.h"
 
 #include "cardwidget.h"
 #include "sinkwidget.h"
@@ -221,7 +222,7 @@ bool MainWindow::on_key_press_event(GdkEventKey* event) {
             case GDK_KEY_Q:
             case GDK_KEY_w:
             case GDK_KEY_q:
-                Gtk::Main::quit();
+                app.quit();
                 return true;
         }
     }

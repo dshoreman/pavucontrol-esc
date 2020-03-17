@@ -48,5 +48,6 @@ private:
     pa_glib_mainloop *m;
 };
 
+extern PavuApplication app;
 
 #endif

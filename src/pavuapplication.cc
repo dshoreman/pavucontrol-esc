@@ -30,6 +30,8 @@
 #include "pavucontrol.h"
 #include "mainwindow.h"
 
+PavuApplication app;
+
 PavuApplication::PavuApplication() :
     Gtk::Application("org.pulseaudio.pavucontrol", Gio::ApplicationFlags::APPLICATION_HANDLES_COMMAND_LINE),
     mainWindow(NULL),
@@ -143,7 +145,7 @@ int main(int argc, char *argv[]) {
     signal(SIGPIPE, SIG_IGN);
 
     /* Create the application */
-    PavuApplication app;
+    app = PavuApplication();
 
     /* Add command-line options */
     app.add_main_option_entry(
