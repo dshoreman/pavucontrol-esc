@@ -124,6 +124,8 @@ MainWindow::MainWindow(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>
         int width  = g_key_file_get_integer(config, "window", "width", NULL);
         int height = g_key_file_get_integer(config, "window", "height", NULL);
 
+        closeOnEsc = g_key_file_get_boolean(config, "window", "closeOnEsc", NULL);
+
         /* When upgrading from a previous version, set showVolumeMeters to TRUE
          * (default from glade file), so users don't complain about missing
          * volume meters. */
@@ -201,7 +203,7 @@ void MainWindow::on_realize() {
 
 bool MainWindow::on_key_press_event(GdkEventKey* event) {
 
-    if (GDK_KEY_Escape == event->keyval) {
+    if (closeOnEsc && GDK_KEY_Escape == event->keyval) {
         Gtk::Main::quit();
         return true;
     }
@@ -241,6 +243,7 @@ MainWindow::~MainWindow() {
     get_size(width, height);
     g_key_file_set_integer(config, "window", "width", width);
     g_key_file_set_integer(config, "window", "height", height);
+    g_key_file_set_integer(config, "window", "closeOnEsc", closeOnEsc);
     g_key_file_set_integer(config, "window", "sinkInputType", sinkInputTypeComboBox->get_active_row_number());
     g_key_file_set_integer(config, "window", "sourceOutputType", sourceOutputTypeComboBox->get_active_row_number());
     g_key_file_set_integer(config, "window", "sinkType", sinkTypeComboBox->get_active_row_number());

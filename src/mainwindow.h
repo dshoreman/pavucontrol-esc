@@ -109,6 +109,7 @@ public:
     Glib::ustring defaultSinkName, defaultSourceName;
 
     bool canRenameDevices;
+    bool closeOnEsc;
 
 protected:
     virtual void on_realize();
