@@ -94,6 +94,7 @@ MainWindow::MainWindow(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>
     x->get_widget("sinkTypeComboBox", sinkTypeComboBox);
     x->get_widget("sourceTypeComboBox", sourceTypeComboBox);
     x->get_widget("notebook", notebook);
+    x->get_widget("closeOnEscCheckButton", closeOnEscCheckButton);
     x->get_widget("showVolumeMetersCheckButton", showVolumeMetersCheckButton);
 
     cardsVBox->set_reallocate_redraws(true);
@@ -112,6 +113,7 @@ MainWindow::MainWindow(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>
     sinkTypeComboBox->signal_changed().connect(sigc::mem_fun(*this, &MainWindow::onSinkTypeComboBoxChanged));
     sourceTypeComboBox->signal_changed().connect(sigc::mem_fun(*this, &MainWindow::onSourceTypeComboBoxChanged));
     showVolumeMetersCheckButton->signal_toggled().connect(sigc::mem_fun(*this, &MainWindow::onShowVolumeMetersCheckButtonToggled));
+    closeOnEscCheckButton->signal_toggled().connect(sigc::mem_fun(*this, &MainWindow::onCloseOnEscCheckButtonToggled));
 
 
     GKeyFile* config = g_key_file_new();
@@ -125,7 +127,9 @@ MainWindow::MainWindow(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>
         int width  = g_key_file_get_integer(config, "window", "width", NULL);
         int height = g_key_file_get_integer(config, "window", "height", NULL);
 
-        closeOnEsc = g_key_file_get_boolean(config, "window", "closeOnEsc", NULL);
+        closeOnEsc = !g_key_file_has_key(config, "window", "closeOnEsc", NULL) ? true
+                    : g_key_file_get_boolean(config, "window", "closeOnEsc", NULL);
+        closeOnEscCheckButton->set_active(closeOnEsc);
 
         /* When upgrading from a previous version, set showVolumeMeters to TRUE
          * (default from glade file), so users don't complain about missing
@@ -244,7 +248,7 @@ MainWindow::~MainWindow() {
     get_size(width, height);
     g_key_file_set_integer(config, "window", "width", width);
     g_key_file_set_integer(config, "window", "height", height);
-    g_key_file_set_integer(config, "window", "closeOnEsc", closeOnEsc);
+    g_key_file_set_integer(config, "window", "closeOnEsc", closeOnEscCheckButton->get_active());
     g_key_file_set_integer(config, "window", "sinkInputType", sinkInputTypeComboBox->get_active_row_number());
     g_key_file_set_integer(config, "window", "sourceOutputType", sourceOutputTypeComboBox->get_active_row_number());
     g_key_file_set_integer(config, "window", "sinkType", sinkTypeComboBox->get_active_row_number());
@@ -1291,6 +1295,10 @@ void MainWindow::setConnectingMessage(const char *string) {
         markup += string;
     markup += "</i>";
     connectingLabel->set_markup(markup);
+}
+
+void MainWindow::onCloseOnEscCheckButtonToggled() {
+    closeOnEsc = closeOnEscCheckButton->get_active();
 }
 
 void MainWindow::onSinkTypeComboBoxChanged() {
